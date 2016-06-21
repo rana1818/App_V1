@@ -1,0 +1,113 @@
+
+
+
+/*Assignment #1
+ *Team 3
+ *memeber: Tong Zhang
+ *sripathy
+ *pranav
+ *Data created: 6-8-2016
+ *Last Updates: 6-9-2016
+*/
+
+
+<?php
+
+$map_arr = array();
+
+$myfile = fopen("test.txt", "r") or die("unable to open file!");
+$new_file = fopen("address_new.txt", "w") or die("unable to open file!");
+
+$invalid = fopen("invalid.txt", "w")or die("unable to open file");
+//read line  by line until reach to the end
+if(!feof($myfile)){
+
+	fgets($myfile);
+}
+$a = 0;
+while($a <= 1) {//!feof($myfile)){
+
+ 	//merge the address
+ 	 $old = rtrim(fgets($myfile));
+	 
+  	 $merged = merge($old);
+	 
+	//cleanse the address
+ 
+ 	 $temp = array($merged);
+ 	 $result = null;
+ 	 $result = array_intersect($map_arr, $temp);
+	 $fir_let = substr($merged, 0, 1);
+ 
+ 	//send request
+ 	 if(($result == null) && (is_numeric($fir_let))) {
+   	 	array_push($map_arr, $merged);
+   	 	$xml = 	request(chop($merged));
+ 		
+		
+		//find the lag and lat
+		$geoLoc =  parse_xml($xml);
+		if($geoLoc != null) {
+			
+			$new = $old ."|".$merged."|".$geoLoc[0]."|".$geoLoc[1];
+			fwrite($new_file, $new."\n");
+		}else {
+	
+			fwrite($invalid, $old."  ".$merged."\n");
+		
+		}   
+   	 	  
+  	 }
+
+	 unset($temp);
+	 unset($result);
+	 $a+=1;
+}
+
+fclose($myfile);
+
+
+
+function merge($str) {
+ 	//this function will remove the trade name and merge 
+  	$merged = "";
+ 	$token = explode("|", $str);
+  	$size = sizeof($token);
+  	for ($i = 1; $i < $size; $i++) {
+    		if($token[$i] != null){
+      			$merged = $merged . $token[$i]. "+"; 
+    		} 
+  	}
+  	return substr($merged, 0, strlen($merged)-1);
+}
+
+
+
+//request location from api(done)
+function request($address) {
+  	$api = "+CD&Key=AIzaSyAvPYie01byUlNyRuXLBN3D9Iy13fTPkhY";
+ 
+ 	$url = "https://maps.googleapis.com/maps/api/geocode/xml?address=".urlencode($address).$api; 	
+ 	
+	return $xml = file_get_contents($url); 
+
+}
+
+
+function parse_xml($xml) {
+	
+	$result = new SimpleXMLElement($xml);
+
+	if($result->status == "OK") {
+		$lat =  $result->result->geometry->location->lat;
+		$lng =  $result->result->geometry->location->lng;
+		return array($lat, $lng);
+	}
+
+	return null;
+
+}
+
+?>
+
+
