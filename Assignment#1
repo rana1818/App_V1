@@ -28,7 +28,7 @@ if(!feof($myfile)){
 while(!feof($myfile)){
 
  	//merge the address
- 	 $old = rtrim(fgets($myfile));
+ 	 $old = strtolower(rtrim(fgets($myfile)));
 	 
   	 $merged = merge($old);
 	 
