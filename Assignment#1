@@ -15,17 +15,17 @@
 
 $map_arr = array();
 
-$myfile = fopen("test.txt", "r") or die("unable to open file!");
+$myfile = fopen("address.txt", "r") or die("unable to open file!"); //given input address file
 $new_file = fopen("address_new.txt", "w") or die("unable to open file!");
 
 $invalid = fopen("invalid.txt", "w")or die("unable to open file");
 //read line  by line until reach to the end
 if(!feof($myfile)){
 
-	fgets($myfile);
+	fgets($myfile); 
 }
-$a = 0;
-while($a <= 1) {//!feof($myfile)){
+
+while(!feof($myfile)){
 
  	//merge the address
  	 $old = rtrim(fgets($myfile));
@@ -61,7 +61,7 @@ while($a <= 1) {//!feof($myfile)){
 
 	 unset($temp);
 	 unset($result);
-	 $a+=1;
+
 }
 
 fclose($myfile);
